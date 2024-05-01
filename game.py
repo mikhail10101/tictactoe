@@ -1,61 +1,49 @@
-import pygame
-from network import Network
-from board import Board
-from player import Player
-
 class Game:
-    def __init__(self,s):
-        self.net = Network()
+    def __init__(self, id):
+        self.p1Went = False
+        self.p2Went = False
+        self.ready = False
+        self.id = id
+        self.moves = [None, None]
+        self.wins = [0,0]
+        self.ties = 0
 
-        self.size = s
-        self.canvas = Canvas(s, "Testing tic-tac-toe")
-        self.board = Board(s)
-
-
-    def run(self):
-        clock = pygame.time.Clock()
-        run = True
-
-        p = self.net.getId()
-
-        while run:
-            p2 = self.net.send(p)
-            clock.tick(60)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                if event.type == pygame.K_ESCAPE:
-                    run = False
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click_loc = pygame.mouse.get_pos()
-                        resx = int(int(click_loc[0]*3/self.size) * self.size/3)
-                        resy = int(int(click_loc[1]*3/self.size) * self.size/3)
-                        self.player.move(resx,resy)
-
-            self.canvas.draw_background()
-            self.board.draw(self.canvas.get_canvas())
-            p.draw(self.canvas.get_canvas())
-            p2.draw(self.canvas.get_canvas())
-            self.canvas.update()
-
-        pygame.quit
-
-class Canvas:
-    def __init__(self,size,name="None"):
-        self.width = size
-        self.height = size
-        self.screen = pygame.display.set_mode((size,size))
-        pygame.display.set_caption(name)
-
-    @staticmethod
-    def update():
-        pygame.display.update()
-
-    def get_canvas(self):
-        return self.screen
+    def get_player_move(self, p):
+        return self.moves
     
-    def draw_background(self):
-        self.screen.fill((255,255,255))
+    def player(self, player, move):
+        self.moves[player] = move
+        if player == 0:
+            self.p1Went = True
+        else:
+            self.p2Went = True
+
+    def connected(self):
+        return self.ready
+    
+    def bothWent(self):
+        return self.p1Went and self.p2Went
+    
+    def winner(self):
+        p1 = self.moves[0].upper()[0]
+        p2 = self.moves[1].upper()[0]
+
+        winner = -1
+        if p1 == "R" and p2 == "S":
+            winner = 0
+        elif p1 == "S" and p2 == "R":
+            winner = 1
+        elif p1 == "P" and p2 == "R":
+            winner = 0
+        elif p1 == "R" and p2 == "P":
+            winner = 1
+        elif p1 == "S" and p2 == "P":
+            winner = 0
+        elif p1 == "P" and p2 == "S":
+            winner = 1
+
+        return winner
+    
+    def resetWent(self):
+        self.p1Went = False
+        self.p2Went = False
