@@ -44,3 +44,6 @@ class Board:
         pygame.draw.lines(screen, (0,0,0), False, [[2*x/3,0], [2*x/3,x]],3)
         pygame.draw.lines(screen, (0,0,0), False, [[0,x/3], [x,x/3]],3)
         pygame.draw.lines(screen, (0,0,0), False, [[0,2*x/3], [x,2*x/3]],3)
+
+    def findIndex(self,x,y):
+        return [int(x*3/self.length),int(y*3/self.length)]

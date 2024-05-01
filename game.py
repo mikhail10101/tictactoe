@@ -44,10 +44,12 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         click_loc = pygame.mouse.get_pos()
-                        self.player.move(click_loc[0],click_loc[1])
+                        res0 = self.board.findIndex(click_loc[0],click_loc[1])
+                        self.player.move(res0[0]*self.size/3,res0[1]*self.size/3)
 
             p2x, p2y = self.parse_data(self.send_data())
-            self.player2.move(p2x,p2y)
+            res1 = self.board.findIndex(p2x,p2y)
+            self.player2.move(res1[0]*self.size/3,res1[1]*self.size/3)
 
             self.canvas.draw_background()
             self.board.draw(self.canvas.get_canvas())
