@@ -44,14 +44,9 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         click_loc = pygame.mouse.get_pos()
-<<<<<<< Updated upstream
-=======
-
-                        #resx = int(click_loc[0]*3/self.size) * self.size/3
-                        #resy = int(click_loc[1]*3/self.size) * self.size/3
-
->>>>>>> Stashed changes
-                        self.player.move(click_loc[0],click_loc[1])
+                        resx = int(int(click_loc[0]*3/self.size) * self.size/3)
+                        resy = int(int(click_loc[1]*3/self.size) * self.size/3)
+                        self.player.move(resx,resy)
 
             p2x, p2y = self.parse_data(self.send_data())
             self.player2.move(p2x,p2y)
