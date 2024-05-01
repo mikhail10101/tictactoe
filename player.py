@@ -1,16 +1,34 @@
 import pygame
 
-class Player:
-    width = height = 30
-
-    def __init__(self,startx, starty, color=(255,0,0)):
-        self.x = startx
-        self.y = starty
+class Player():
+    def __init__(self, x, y, width, height, color):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
         self.color = color
+        self.rect = (x,y,width,height)
+        self.vel = 3
 
-    def draw(self,g):
-        pygame.draw.rect(g, self.color, (self.x,self.y,self.width,self.height),0)
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, self.rect)
 
-    def move(self, newX, newY):
-        self.x = newX
-        self.y = newY
+    def move(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT]:
+            self.x -= self.vel
+
+        if keys[pygame.K_RIGHT]:
+            self.x += self.vel
+
+        if keys[pygame.K_UP]:
+            self.y -= self.vel
+
+        if keys[pygame.K_DOWN]:
+            self.y += self.vel
+
+        self.update()
+
+    def update(self):
+        self.rect = (self.x, self.y, self.width, self.height)
