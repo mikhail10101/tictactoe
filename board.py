@@ -18,6 +18,7 @@ class Board:
     def __init__(self,size) -> None:
         self.values = [[0,0,0],[0,0,0],[0,0,0]]
         self.length = size
+        self.mode = 0
     
     def check(self,n):
         for i, series in enumerate(winners):
