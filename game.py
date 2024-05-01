@@ -9,9 +9,13 @@ class Game:
         self.ties = 0
 
     def get_player_move(self, p):
-        return self.moves
-    
-    def player(self, player, move):
+        """
+        :param p: [0,1]
+        :return: Move
+        """
+        return self.moves[p]
+
+    def play(self, player, move):
         self.moves[player] = move
         if player == 0:
             self.p1Went = True
@@ -20,11 +24,12 @@ class Game:
 
     def connected(self):
         return self.ready
-    
+
     def bothWent(self):
         return self.p1Went and self.p2Went
-    
+
     def winner(self):
+
         p1 = self.moves[0].upper()[0]
         p2 = self.moves[1].upper()[0]
 
@@ -43,7 +48,7 @@ class Game:
             winner = 1
 
         return winner
-    
+
     def resetWent(self):
         self.p1Went = False
         self.p2Went = False
