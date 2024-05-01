@@ -1,5 +1,5 @@
 import socket
-
+import pickle
 
 class Network:
 
@@ -12,18 +12,19 @@ class Network:
         self.addr = (self.host, self.port)
         self.id = self.connect()
 
+    def getId(self):
+        return self.id
+
     def connect(self):
-        self.client.connect(self.addr)
-        return self.client.recv(2048).decode()
+        try:
+            self.client.connect(self.addr)
+            return pickle.loads(self.client.recv(2048))
+        except:
+            pass
 
     def send(self, data):
-        """
-        :param data: str
-        :return: str
-        """
         try:
-            self.client.send(str.encode(data))
-            reply = self.client.recv(2048).decode()
-            return reply
+            self.client.send(pickle.dumps(data))
+            return pickle.loads(self.client.recv(2048))
         except socket.error as e:
             return str(e)

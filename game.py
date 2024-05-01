@@ -1,21 +1,7 @@
 import pygame
 from network import Network
 from board import Board
-
-class Player:
-    width = height = 30
-
-    def __init__(self,startx, starty, color=(255,0,0)):
-        self.x = startx
-        self.y = starty
-        self.color = color
-
-    def draw(self,g):
-        pygame.draw.rect(g, self.color, (self.x,self.y,self.width,self.height),0)
-
-    def move(self, newX, newY):
-        self.x = newX
-        self.y = newY
+from player import Player
 
 class Game:
     def __init__(self,s):
@@ -25,14 +11,15 @@ class Game:
         self.canvas = Canvas(s, "Testing tic-tac-toe")
         self.board = Board(s)
 
-        self.player = Player(0,0)
-        self.player2 = Player(0,0)
 
     def run(self):
         clock = pygame.time.Clock()
         run = True
 
+        p = self.net.getId()
+
         while run:
+            p2 = self.net.send(p)
             clock.tick(60)
 
             for event in pygame.event.get():
@@ -48,29 +35,13 @@ class Game:
                         resy = int(int(click_loc[1]*3/self.size) * self.size/3)
                         self.player.move(resx,resy)
 
-            p2x, p2y = self.parse_data(self.send_data())
-            self.player2.move(p2x,p2y)
-
             self.canvas.draw_background()
             self.board.draw(self.canvas.get_canvas())
-            self.player.draw(self.canvas.get_canvas())
-            self.player2.draw(self.canvas.get_canvas())
+            p.draw(self.canvas.get_canvas())
+            p2.draw(self.canvas.get_canvas())
             self.canvas.update()
 
         pygame.quit
-
-    def send_data(self):
-        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
-        reply = self.net.send(data)
-        return reply
-    
-    @staticmethod
-    def parse_data(data):
-        try:
-            d = data.split(":")[1].split(",")
-            return int(d[0]), int(d[1])
-        except:
-            return 0,0
 
 class Canvas:
     def __init__(self,size,name="None"):
