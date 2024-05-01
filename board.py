@@ -39,4 +39,8 @@ class Board:
                 self.values[i][j] = 0
 
     def draw(self, screen):
-        pygame.draw.lines(screen, (0,0,0), False, [[0,0], [self.length,self.length]],3)
+        x = self.length
+        pygame.draw.lines(screen, (0,0,0), False, [[x/3,0], [x/3,x]],3)
+        pygame.draw.lines(screen, (0,0,0), False, [[2*x/3,0], [2*x/3,x]],3)
+        pygame.draw.lines(screen, (0,0,0), False, [[0,x/3], [x,x/3]],3)
+        pygame.draw.lines(screen, (0,0,0), False, [[0,2*x/3], [x,2*x/3]],3)
