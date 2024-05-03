@@ -1,90 +1,71 @@
 import pygame
-from network import Network
-from board import Board
 
-class Player:
-    width = height = 30
-
-    def __init__(self,startx, starty, color=(255,0,0)):
-        self.x = startx
-        self.y = starty
-        self.color = color
-
-    def draw(self,g):
-        pygame.draw.rect(g, self.color, (self.x,self.y,self.width,self.height),0)
-
-    def move(self, newX, newY):
-        self.x = newX
-        self.y = newY
+winners = [
+  [[0,0],[0,1],[0,2]],
+  [[1,0],[1,1],[1,2]],
+  [[2,0],[2,1],[2,2]],
+  [[0,0],[1,0],[2,0]],
+  [[0,1],[1,1],[2,1]],
+  [[0,2],[1,2],[2,2]],
+  [[0,0],[1,1],[2,2]],
+  [[0,2],[1,1],[2,0]]
+]
 
 class Game:
-    def __init__(self,s):
-        self.net = Network()
+    def __init__(self, id):
+        self.id = id
+        self.ready = False
+        self.turns = 0
+        self.values = [
+            [-1,-1,-1],
+            [-1,-1,-1],
+            [-1,-1,-1]
+        ]
+        self.mode = 0
 
-        self.size = s
-        self.canvas = Canvas(s, "Testing tic-tac-toe")
-        self.board = Board(s)
-
-        self.player = Player(0,0)
-        self.player2 = Player(0,0)
-
-    def run(self):
-        clock = pygame.time.Clock()
-        run = True
-
-        while run:
-            clock.tick(60)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                if event.type == pygame.K_ESCAPE:
-                    run = False
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click_loc = pygame.mouse.get_pos()
-                        resx = int(int(click_loc[0]*3/self.size) * self.size/3)
-                        resy = int(int(click_loc[1]*3/self.size) * self.size/3)
-                        self.player.move(resx,resy)
-
-            p2x, p2y = self.parse_data(self.send_data())
-            self.player2.move(p2x,p2y)
-
-            self.canvas.draw_background()
-            self.board.draw(self.canvas.get_canvas())
-            self.player.draw(self.canvas.get_canvas())
-            self.player2.draw(self.canvas.get_canvas())
-            self.canvas.update()
-
-        pygame.quit
-
-    def send_data(self):
-        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
-        reply = self.net.send(data)
-        return reply
+    def get_current_turn(self):
+        return self.turns%2
     
-    @staticmethod
-    def parse_data(data):
-        try:
-            d = data.split(":")[1].split(",")
-            return int(d[0]), int(d[1])
-        except:
-            return 0,0
+    #return true on success, false on failure
+    def play_current_turn(self, p, x, y):
+        if (self.turns%2 + self.mode != p):
+            return False
+        if self.values[x][y] != -1:
+            return False
+        self.values[x][y] = self.turns%2
+        self.turns += 1
+        return True
 
-class Canvas:
-    def __init__(self,size,name="None"):
-        self.width = size
-        self.height = size
-        self.screen = pygame.display.set_mode((size,size))
-        pygame.display.set_caption(name)
+    def connected(self):
+        return self.ready
 
-    @staticmethod
-    def update():
-        pygame.display.update()
+    #return -1, 0, or 1
+    def check_winner(self, p):
+        for series in winners:
+            won = True
+            for s in series:
+                won = won and (self.values[s[0]][s[1]] == p)
+            if (won): return True
+        return False
 
-    def get_canvas(self):
-        return self.screen
-    
-    def draw_background(self):
-        self.screen.fill((255,255,255))
+    def reset(self):
+        self.turns = 0
+        self.values = [
+            [-1,-1,-1],
+            [-1,-1,-1],
+            [-1,-1,-1]
+        ]
+
+        if (self.mode == 0):
+            self.mode = 1
+        else:
+            self.mode = 0
+
+    def draw(self, win, size):
+        for i in range(3):
+            for j in range(3):
+                if self.values[i][j] == 1:
+                    pygame.draw.lines(win, (255,255,255), False, [[i*(size//3),j*(size//3)], [(i+1)*(size//3),(j+1)*(size//3)]],3)
+                    pygame.draw.lines(win, (255,255,255), False, [[(i+1)*(size//3),j*(size//3)], [i*(size//3),(j+1)*(size//3)]],3)
+                elif self.values[i][j] == 0:
+                    pygame.draw.circle(win, (255,255,255), [(2*i+1)*(size//3)//2, (2*j+1)*(size//3)//2], size*0.8//6)
