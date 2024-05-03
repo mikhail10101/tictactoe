@@ -28,11 +28,11 @@ class Game:
     
     #return true on success, false on failure
     def play_current_turn(self, p, x, y):
-        if (self.turns%2 + self.mode != p):
+        if ((self.turns + self.mode//2)%2 != p):
             return False
         if self.values[x][y] != -1:
             return False
-        self.values[x][y] = self.turns%2
+        self.values[x][y] = p
         self.turns += 1
         return True
 
@@ -55,11 +55,7 @@ class Game:
             [-1,-1,-1],
             [-1,-1,-1]
         ]
-
-        if (self.mode == 0):
-            self.mode = 1
-        else:
-            self.mode = 0
+        self.mode = (self.mode+1)%4
 
     def draw(self, win, size):
         for i in range(3):
