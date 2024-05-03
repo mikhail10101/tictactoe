@@ -22,9 +22,6 @@ class Game:
             [-1,-1,-1]
         ]
         self.mode = 0
-
-    def get_current_turn(self):
-        return self.turns%2
     
     #return true on success, false on failure
     def play_current_turn(self, p, x, y):
